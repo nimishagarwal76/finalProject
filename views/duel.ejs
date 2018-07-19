@@ -1,0 +1,193 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Quiz</title>
+        <link rel="shortcut icon" type="image/x-icon" href="../../public/favicon.ico"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="../public/dualStyle.css">
+    </head>
+    <body>
+      <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">Quiz</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="menu">HOME</a></li>
+                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+              </ul>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-5">
+      <div id="errorMessage"></div>
+
+      <div id="quiz">
+         <!-- <button id="start">START</button> -->
+         <img src="../../public/start.png" id="start" class=".img-circle"><br>
+         <div id="question-window">
+           <div id="info" class="text-center text-info"></div>
+             <span id="qnumber" class="label label-warning">1</span><div id="output"></div>
+             <div id="feedback"></div>
+         </div>
+         <div id="stats">
+         <i class="fa fa-dollar"></i> EARNED : <span id="earned">0</span>&nbsp
+         <i class="fa fa-dollar"></i> SPENT : <span id="spend">0</span><br>
+         </div>
+     </div>
+     </div>
+     <div class="col-sm-3" id="versus">
+      <span >You</span><br>
+      VS<br>someone
+     </div>
+     <div background="../../public/chatBackground.png" class="col-sm-4" id="chat">
+       <div id="message"></div>
+        <div id="chatType">
+         <input placeholder="Type a message" id="chatInput">&nbsp&nbsp<i class="fa fa-paper-plane" id="send" aria-hidden="true"></i>
+       </div>
+     </div>
+   </div>
+        <script>
+          var feedback = document.getElementById('feedback');
+          var questionDisplay = document.getElementById('question-window');
+          var error = document.getElementById('errorMessage');
+          var btn = document.getElementById('start');
+          var next = document.getElementById('next');
+          // var socket = io.connect('http://localhost:3000/');
+          var socket = io.connect('/');
+          var output = document.getElementById('output');
+          var info = document.getElementById('info');
+          var quiz = document.getElementById('quiz');
+          var earned = document.getElementById('earned');
+          var spend = document.getElementById('spend');
+          var questionNumber = document.getElementById('qnumber');
+          var send = document.getElementById('send');
+          var chatInput = document.getElementById('chatInput');
+          var message = document.getElementById('message');
+          var select;
+          var click = false;
+          var earnedMoney = 0,spendMoney = 0;
+
+          //disabling right click
+          output.addEventListener('contextmenu', e => e.preventDefault());
+
+          send.addEventListener('click', (e) => {
+            console.log(chatInput.value);
+            socket.emit('personalMessage', {message : chatInput.value})
+            chatInput.value = '';
+          });
+
+
+          btn.addEventListener('click',function(e){
+            btn.style.display = 'none';
+            document.getElementById('stats').style.display = 'block';
+            socket.emit('user',{user:'<%=user%>',mode:'dual'},function(data){
+            questionDisplay.style.display = 'block';
+              if(data)
+              {
+                info.innerHTML='Wait for someone to join the Server';
+              }
+              else
+              {
+                info.innerHTML='Error You have one window Open';
+              }
+            });
+          });
+
+
+          socket.on('chat',function(data){
+            click = false;
+            console.log(data);
+            info.innerHTML="";
+            feedback.innerHTML="";
+            questionNumber.innerHTML = `${data.data.questionNumber}`
+            earned.innerHTML = `${data.info.earned}`
+            spend.innerHTML = `${data.info.spend}`
+            output.innerHTML = `<p> ${data.data.question}</p>`
+            data.data.option.forEach(function(answer){
+              feedback.innerHTML += `<p id="option" class="btn btn-lg btn-primary btn-block">${answer}</p>`
+            });
+            // questionNumber.innerHTML = data.questionNumber;
+          });
+
+          socket.on('pMessageServer',function(data){
+            console.log('final',data);
+            message.innerHTML += `<p><strong>${data.emiter}</strong>: ${data.message}</p>`
+          });
+
+          socket.on('correct',function(){
+            select.style.background = '#5acd5a';
+            socket.emit('next');
+          });
+
+          socket.on('incorrect',function(){
+            // socket.emit('gameover');
+            // console.log('voila');
+            select.style.background = "#f76666";
+            socket.emit('next');
+          })
+
+          socket.on('win',function(data){
+            feedback.innerHTML = '';
+            output.innerHTML = '';
+            questionNumber.innerHTML = '';
+            info.innerHTML = `Your Opponent Left<br><img src="../../public/youWin.jpg" id="winImg" >
+            <br><br><i class="fa fa-undo" id="playAgain"></i>`
+          });
+
+          socket.on('gameover',function(data){
+            feedback.innerHTML = '';
+            output.innerHTML = '';
+            questionNumber.innerHTML = '';
+            if(data.result == 'win')
+            {
+              info.innerHTML= `You Win
+                <br><img src="../../public/win.jpg" id="winImg">
+                <br><br><a href="menu"><i class="fa fa-home" aria-hidden="true"></i></a>&nbsp
+                <i class="fa fa-undo" id="playAgain"></i>`;
+            }
+            else if (data.result == 'lost'){
+              info.innerHTML= `You Lose
+                <br><img src="../../public/lose.jpg" id="winImg">
+                <br><br><a href="menu"><i class="fa fa-home" aria-hidden="true"></i></a>&nbsp<i class="fa fa-undo" id="playAgain"></i>`;
+            }
+          });
+
+          quiz.addEventListener('click',function(e){
+            if(e.target.id == 'playAgain')
+            {
+              location.reload();
+            }
+
+            if(!click)
+            {
+              if(e.target.id == 'option')
+              {
+                // e.target.style.background = '#abdfab';
+                // earnedMoney+=2;
+                // clearInterval(timer);
+                // second = 10;
+                select = e.target;
+                click = true;
+                socket.emit('check',{select:e.target.innerHTML});
+                // earned.innerHTML=earnedMoney;
+              }
+            }
+          });
+
+        </script>
+    </body>
+</html>

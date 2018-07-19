@@ -1,0 +1,49 @@
+<html>
+<head>
+  <title>
+    ToDoApp
+  </title>
+  <link rel="shortcut icon" type="image/x-icon" href="../../public/favicon.ico"/>
+  <link rel="stylesheet" type="text/css" href="../public/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="../public/login.css">
+  <style>
+  #msg{
+    color:'red';
+  }
+  </style>
+  	<script type="text/javascript" src="../public/dynamicuser.js"></script>
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+<body>
+<div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills float-right">
+            <li class="nav-item">
+              <a class="nav-link" href="/home">Home</a>
+            </li>
+            <li class="nav-item ">
+              <a class="nav-link active" href="/register">Register <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login </a>
+            </li>
+          </ul>
+        </nav>
+        <h3 class="text-muted"></h3>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <% include partials/register.ejs %>
+        </div>
+
+      </div>
+
+      <footer class="footer">
+        <p>&copy; Quiz</p>
+      </footer>
+
+    </div>
+</body>
+</html>

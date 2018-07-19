@@ -1,0 +1,147 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Calendar</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="../../../public/bootstrap.css">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="../../../public/styles.css">
+    <script>
+    var http = new XMLHttpRequest();
+    var call, ulist, rem;
+    var init, visit = true;
+    var user = '<%=user%>';
+    console.log(user);
+    document.addEventListener('DOMContentLoaded', function (){
+    ulist = document.getElementById('invitation');
+    ulist.addEventListener('click',function(e){
+      if(e.target.className == 'addBtn')
+      {
+        rem = e.target.parentElement;
+        add(e.target.id)
+        rem.parentNode.removeChild(rem);
+      }
+    });
+
+    });
+    function add(id)
+    {
+      var url = "/calendar/ajax/add?id="+id;
+      // console.log('addurl',url);
+      http.open("GET", url, true);
+      http.send(null);
+    }
+
+    function search()
+    {
+      var url ="/calendar/ajax/inv?user="+user;
+      console.log(url);
+      http.open("GET", url, true);
+      http.send(null);
+      http.onreadystatechange = function()
+      {
+       if (http.readyState == 4 && http.status == 200)
+       {
+        call = JSON.parse(http.responseText);
+        console.log(call);
+        if(visit)
+        {
+          init = call.length;
+          visit = false;
+          call.forEach(function(result){
+          document.getElementById('invitation').innerHTML+=`<li><strong>${result.title}</strong><br>
+          Description: ${result.description}<br><br>Start : ${result.start}<br>End &nbsp: ${result.end}<br>Date &nbsp: ${result.date}/${result.month+1}/${result.year}
+          <span id=${result._id} class = 'addBtn'>ADD</span><br><hr></li>`;
+          // console.log(ulist);
+          });
+        }
+        console.log(init,call.length);
+        if(call.length != init)
+        {
+          init = call.length;
+          document.getElementById('invitation').innerHTML ='';
+          call.forEach(function(result){
+          document.getElementById('invitation').innerHTML+=`<li><strong>${result.title}</strong><br>
+          Description: ${result.description}<br><br>Start : ${result.start}<br>End &nbsp: ${result.end}<br>Date &nbsp: ${result.date}/${result.month+1}/${result.year}
+          <span id=${result._id} class = 'addBtn'>ADD</span><br><hr></li>`;
+          // console.log(ulist);
+          });
+        }
+        }
+      }
+      setTimeout(search,1000);
+    };
+
+    </script>
+  </head>
+
+  <body onload = 'search()'>
+
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="">Calendar</a>
+
+      <div>
+        <ul class="nav nav-pills float-right">
+          <li class="nav-item active">
+            <a class="nav-link" href="/calendar/<%=user%>/home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Invites</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendar/logout">Logout</a>
+        </ul>
+      </div>
+    </nav>
+
+
+
+      <div class="starter-template">
+        <div class="month" style="height:10%">
+        <ul>
+        <li>
+        </li>
+        </ul>
+        </div>
+        <div class="modal-body row">
+        <div class="col-md-6" >
+          <div id="part1">
+            <h3><center>INVITES</center></h3>
+            <ul style="list-style-type:square" id="invitation">
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6" >
+          <div id="part2">
+            <h3><center>SEND INVITATION</center></h3><br>
+            <div class="control">
+              <form method='POST' action="">
+              <label >Invite To:</label>
+              <input type="text" id="username" name="invite" placeholder="Username" autocomplete="false" required /><span id="msg"></span><br><br>
+              <label >Title:</label>
+              <input type="text" id="appt-time" name="title" required /><br><br>
+              <label >Description:</label>
+              <textarea id="appt-time" name="description"  cols="40" rows="2"></textarea><br><br>
+              <label >Date:</label>
+              <input type="date" id="appt-time" name="date" required /><br><br>
+              <label >Start:</label>
+              <input type="time" id="appt-time" name="start" required /><br><br>
+              <label >End:</label>
+              <input type="time" id="appt-time" name="end" required /><br><br>
+              <label > ‏‏‎ </label>
+              <input type="submit" value="Create" id="sub" />
+            </form>
+            </div>
+          </div>
+        </div>
+</div>
+
+      </div>
+
+
+  </body>
+</html>

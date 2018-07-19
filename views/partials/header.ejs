@@ -1,0 +1,13 @@
+<div id="header">
+	<span style="margin-left:14%">NOTES</span>
+	<a href="/todoapp/logout"><span style="float:right">Logout</span></a>
+	<span style="float:right; font-size:large;color: black; margin-right:10px">Hi <%= user%></span>
+	<!-- <span></span> -->
+</div>
+<ul class='sidebar-nav'>
+<a href="/todoapp/<%=user%>/all_note">	<li>All Notes</li></a>
+<a href="/todoapp/<%=user%>/all_todo">	<li>All Todo</li></a>
+	<li><hr></li>
+<a href="/todoapp/<%=user%>/create_note">	<li>Create Note</li></a>
+<a href="/todoapp/<%=user%>/create_todo">	<li>Create Todo</li></a>
+</ul>

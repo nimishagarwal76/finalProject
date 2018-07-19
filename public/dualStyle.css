@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css?family=Indie+Flower|Roboto');
+html, body {
+font-family: 'Nunito';
+max-width: 100%;
+overflow-x: hidden;
+max-height: 100%;
+overflow-y: hidden;
+}
+
+h2{
+font-size: 18px;
+padding: 10px 20px;
+color: #575ed8;
+}
+
+#quiz{
+max-width: 600px;
+margin: 60px auto;
+margin-top: 100px;
+border: none ;
+border-radius: 10px;
+background: grey;
+
+}
+
+#question-window{
+height: 400px;
+overflow: auto;
+background: rgba(255, 255, 255, 0.8);
+display: none;
+}
+
+#output p{
+padding: 14px 0px;
+margin: 0 20px;
+border-bottom: 1px solid #e9e9e9;
+color: black;
+font-size: x-large;
+text-align: center;
+font-family: Gill Sans, sans-serif;
+height: 40%;
+
+
+}
+
+#feedback p{
+color: black;
+padding: 14px 15px;
+margin: 0 20px;
+font-size: large;
+}
+
+#feedback p:hover{
+background: rgba(255,255,255,0.85);
+cursor : pointer;
+}
+
+#output strong{
+color: #575ed8;
+}
+
+label{
+box-sizing: border-box;
+display: block;
+padding: 10px 20px;
+}
+
+input{
+padding: 10px 20px;
+box-sizing: border-box;
+background: #eee;
+border: 0;
+display: block;
+width: 100%;
+background: #fff;
+border-bottom: 1px solid #eee;
+font-family: Nunito;
+font-size: 16px;
+}
+
+#start{
+background: #575ed8;
+color: #fff;
+font-size: 18px;
+border: 0;
+padding: 12px 0;
+width: 100%;
+/* border-radius: 17px; */
+}
+#stats{
+margin: 100px ;
+color: blue;
+}
+#info{
+font-size: xx-large;
+font-family: sans-serif;
+}
+#start{
+/* color: */
+width: 200px;
+height: 200px;
+background: none;
+cursor: pointer;
+}
+#winImg{
+height: 50%;
+width: 40%;
+border-radius: 15px;
+}
+#playAgain{
+padding:10px;
+color:green;
+border:none;
+background: rgba(255, 255, 255, 0.8);
+cursor: pointer;
+}
+#money{
+/* color:green; */
+font-size: medium;
+background:white;
+color: black;
+padding: 4px;
+}
+#stats{
+/* background: white; */
+color: black;
+font-size: xx-large;
+margin:0px;
+/* background: rgb(242, 106, 54); */
+display: none;
+text-align: center;
+}
+#qnumber{
+float:right;
+font-size: xx-large;
+padding: 23px;
+color: blue;
+background: #eee;
+}
+#time{
+  font-size: xx-large;
+  text-align: center;
+  background: #5cb95c;
+  color: black;
+}
+#feedback{
+  overflow-x: hidden;
+}
+#chat{
+  /* color: grey; */
+  height: 100%;
+  /* background: grey; */
+  background-image: url('../public/chatBackground.png');
+  overflow: auto;
+}
+#chatType{
+  position: absolute;
+  bottom: 10px;
+  background: #f5f1ee;
+  padding: 8px;
+  border-radius: 4px;
+  width: 90%;
+}
+#chatInput{
+  display: inline-block;
+  border-radius: 4px;
+  width:85%;
+}
+.fa-paper-plane{
+font-size: x-large;
+cursor: pointer;
+}
+#versus{
+  font-family: 'Indie Flower', cursive;
+  font-size: 60px;
+  padding-top: 10%;
+  text-align: center;
+}
+#message{
+  margin-top: 80px;
+}
+#message p{
+  font-size: large;
+  font-family: 'Roboto', sans-serif;
+}
