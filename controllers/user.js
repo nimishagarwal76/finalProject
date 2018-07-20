@@ -14,7 +14,7 @@ exports.register_get = function(req, res){
   }
   else
   {
-      res.redirect('/'+req.user.username);
+    res.redirect('/'+req.user.username);
   }
 };
 

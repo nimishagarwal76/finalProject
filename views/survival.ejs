@@ -36,15 +36,16 @@
 
       <div id="quiz">
          <div id="time">Time</div>
-         <button id="start">START</button>
+         <!-- <button id="start">START</button> -->
+         <img src="../../public/start.png" id="start" class=".img-circle"><br>
          <div id="question-window">
            <div id="info" class="text-center text-info"></div>
+             <span id="qnumber" class="label label-warning">1</span>
              <div id="output"></div>
              <div id="feedback"></div>
          </div>
          <div id="stats">
-         <i class="fa fa-dollar"></i> EARNED : <span id="earned">0</span><span id="qnumber">1</span><br>
-         <i class="fa fa-dollar"></i> SPENT : <span id="spend">0</span><br>
+         <i class="fa fa-dollar"></i> EARNED : <span id="earned">0</span><br>
          </div>
      </div>
      </div>
@@ -63,7 +64,6 @@
           var info = document.getElementById('info');
           var quiz = document.getElementById('quiz');
           var earned = document.getElementById('earned');
-          var spend = document.getElementById('spend');
           var questionNumber = document.getElementById('qnumber');
           var questionWindow = document.getElementById('question-window');
           var time = document.getElementById('time');
@@ -131,13 +131,15 @@
             },1000);
 
             click = false;
+
             info.innerHTML="";
             feedback.innerHTML="";
             output.innerHTML = `<p> ${data.data.question}</p>`
             data.data.option.forEach(function(answer){
               feedback.innerHTML += `<p id="option">${answer}</p>`
             });
-          //   questionNumber.innerHTML = data.questionNumber;
+            questionNumber.innerHTML = data.data.questionNumber;
+            earned.innerHTML = data.data.earned;
           });
 
           socket.on('correct',function(){
@@ -157,6 +159,7 @@
 
           socket.on('gameover',function(){
             console.log('gameover');
+            questionNumber.innerHTML = '';
             feedback.innerHTML = '';
             output.innerHTML = '';
             time.innerHTML = '';
@@ -174,9 +177,9 @@
           // });
           //
           // socket.on('gameover',function(data){
-            feedback.innerHTML = '';
-            output.innerHTML = '';
-          //   questionNumber.innerHTML = '';
+            // feedback.innerHTML = '';
+            // output.innerHTML = '';
+            // questionNumber.innerHTML = '';
           //   if(data.result == 'win')
           //   {
           //     info.innerHTML= `You Win

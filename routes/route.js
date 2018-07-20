@@ -6,7 +6,6 @@ var LocalStrategy = require('passport-local').Strategy;
 var bodyParser =  require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var user_controller = require("../controllers/user.js");
-var ajax_controller = require("../controllers/ajax.js");
 var passport = require('passport');
 var sanitize = require('mongo-sanitize');
 

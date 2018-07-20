@@ -1,14 +1,14 @@
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var bodyParser =  require('body-parser');
-var session = require('express-session');
+// var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var expressValidator = require('express-validator');
 var cookieSession = require('cookie-session');
 var helmet = require('helmet');
-var MongoDBStore = require('connect-mongodb-session')(session);
+// var MongoDBStore = require('connect-mongodb-session')(session);
 var User = require('./models/user.js');
 var bcrypt = require('bcryptjs');
 var expressSanitizer = require('express-sanitizer');
@@ -41,7 +41,7 @@ app.use(expressValidator({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use('/public',express.static('public'));
 
 //express session
@@ -95,11 +95,13 @@ function(username, password, done){
 ));
 
  passport.serializeUser(function(user,done){
+   //encoding just the id of user
    done(null, user.id);
  })
 
 
  passport.deserializeUser(function(id, done){
+   //finding user by if that is retrieved from cookie
    User.findById(id).then((user)=>{
      done(null,user);
    });
@@ -136,6 +138,10 @@ function questionController(socket, mode)
 {
   if(mode == 'survival')
   {
+    // counting question Number
+    socket.question+=1;
+
+
     fetch('https://opentdb.com/api.php?amount=1&type=multiple')
     .then((res)=>{return res.json()})
     .then((data)=>{
@@ -144,8 +150,11 @@ function questionController(socket, mode)
       options.splice(Math.floor(Math.random()*3),0,data.results[0].correct_answer);
       var ques = {
         question : data.results[0].question,
-        option : options
+        option : options,
+        questionNumber : socket.question,
+        earned : socket.earned
       };
+      console.log('earned',socket.earned);
       socket.emit('chat',{data:ques});
     });
   }
@@ -221,14 +230,13 @@ nsp.on('connection', (socket) => {
       avail[data.user] = socket;
       socket.user = data.user;
       socket.earned = 0;
-      socket.spend = 0;
       console.log('in here');
       socket.join('room'+room);
       socket.room = 'room'+room;
 
         if(!socket.question)
         {
-          socket.question = 1;
+          socket.question = 0;
         }
         console.log('finish');
 
@@ -246,6 +254,7 @@ nsp.on('connection', (socket) => {
     console.log(data);
     if(data.select==socket.answer)
     {
+      socket.earned += 5;
       socket.emit('correct');
     }
     else
@@ -259,7 +268,16 @@ nsp.on('connection', (socket) => {
   });
 
   socket.on('gameover',function(){
-    socket.emit('gameover');
+    User.findOne({username : socket.user},function(err, result){
+      if(err) throw err;
+      console.log(result);
+      result.coin += Number(socket.earned);
+      result.save();
+    });
+    setTimeout(()=>{
+      socket.emit('gameover');
+    },1000);
+
   })
 
   socket.on('disconnect',function(data){
@@ -305,68 +323,7 @@ nspDual.on('connection', (socket) => {
   });
 
 
-
-
-
-
-    // Handle chat event
-    // socket.on('chat', function(data){
-    //
-    //     console.log('i m here');
-    //     console.log('question',socket.question);
-    //
-    //     if(Number(socket.question) <= 11)
-    //     {
-    //       io.sockets.in(socket.room).emit('chat', data);
-    //     }
-    //     else
-    //     {
-    //       // save coins in database
-    //       console.log('toFind',socket.user);
-    //
-    //       //decalre winner
-    //       var temp = io.nsps['/'].connected[socket.id].earned;
-    //       var id = socket.id;
-    //
-    //       for (let socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
-    //         console.log('earnedTest',io.nsps['/'].connected[socketID].earned);
-    //         coinUpdate(io, socket);
-    //
-    //         if(temp < io.nsps['/'].connected[socketID].earned)
-    //         {
-    //           id = socketID;
-    //           console.log('id',id);
-    //         }
-    //       }
-    //
-    //       io.nsps['/'].connected[id].broadcast.in(socket.room).emit('gameover',{result : 'lost'});
-    //       io.nsps['/'].connected[id].emit('gameover',{result : 'win'});
-    //     }
-    //     for (socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
-    //       io.nsps['/'].connected[socketID].chance=true;
-    //     }
-    // });
-
-
-
-
     socket.on('next',function(data){
-      // console.log('money',data);
-
-      // console.log('analysing',Object.keys(io.nsps['/'].adapter.rooms[socket.room].sockets));
-
-      // socket.earned = data.earned;
-      // socket.spend = data.spend;
-
-      // if(socket.chance)
-      // {
-        // for (socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
-          // io.nsps['/'].connected[socketID].chance=false;
-        // }
-        // console.log(socket.question,'hola');
-        // socket.emit('play',{question:socket.question});
-
-        ///////////////////////////////////////////////\
         console.log('i m here');
         console.log('question',socket.question);
 
@@ -399,7 +356,9 @@ nspDual.on('connection', (socket) => {
 
 
           io.nsps['/'].connected[id].broadcast.in(socket.room).emit('gameover',{result : 'lost'});
-          io.nsps['/'].connected[id].emit('gameover',{result : 'win'});
+          setTimeout(()=>{
+            io.nsps['/'].connected[id].emit('gameover',{result : 'win'});
+          },1000)
         }
 
       // }
@@ -421,31 +380,6 @@ nspDual.on('connection', (socket) => {
     });
 
     socket.on('personalMessage',function(data){
-      if(!socket.chatID)
-      {User.findOne({username:socket.user}, {chat:1}, function(err, result){
-        console.log('checking', result);
-        result.chat.push({
-          emiter : socket.user,
-          message : data.message
-        });
-        result.save();
-        for (socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
-          io.nsps['/'].connected[socketID].chatID = result._id;
-        }
-      });}
-      else
-      {User.findOne({username:socket.user,_id:socket.chatID}, {chat:1}, function(err, result){
-        console.log('checking when socket id is defined', result);
-        result.chat.push({
-          emiter : socket.user,
-          message : data.message
-        });
-        result.save();
-        for (socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
-          io.nsps['/'].connected[socketID].chatID = result._id;
-        }
-      });}
-
       io.sockets.in(socket.room).emit('pMessageServer',{message:data.message,emiter:socket.user});
     });
 

@@ -4,7 +4,7 @@ font-family: 'Nunito';
 max-width: 100%;
 overflow-x: hidden;
 max-height: 100%;
-overflow-y: hidden;
+/* overflow-y: hidden; */
 }
 
 h2{
@@ -183,4 +183,11 @@ cursor: pointer;
 #message p{
   font-size: large;
   font-family: 'Roboto', sans-serif;
+}
+#fa-undo{
+  background: #e6e6e6;
+}
+#instruction{
+  padding: 65px;
+  /* width: 50%; */
 }
