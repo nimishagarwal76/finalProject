@@ -165,6 +165,7 @@ background: #eee;
   display: inline-block;
   border-radius: 4px;
   width:85%;
+  /* z-index: -1; */
 }
 .fa-paper-plane{
 font-size: x-large;

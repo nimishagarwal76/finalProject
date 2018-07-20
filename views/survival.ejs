@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>WebScockets 101</title>
+        <title>Quiz</title>
         <link rel="shortcut icon" type="image/x-icon" href="../../public/favicon.ico"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -22,18 +22,12 @@
           <a class="navbar-brand" href="#">Quiz</a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
-              <!-- <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">Page 1</a></li>
-                <li><a href="#">Page 2</a></li>
-                <li><a href="#">Page 3</a></li>
-              </ul> -->
-              <ul class="nav navbar-nav navbar-right">
-                <li><a href="menu">HOME</a></li>
-                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-              </ul>
-            </div>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="menu">HOME</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+          </ul>
         </div>
+      </div>
       </nav>
 
       <div class="row">
@@ -71,6 +65,7 @@
           var earned = document.getElementById('earned');
           var spend = document.getElementById('spend');
           var questionNumber = document.getElementById('qnumber');
+          var questionWindow = document.getElementById('question-window');
           var time = document.getElementById('time');
           var earnedMoney = 0,spendMoney = 0;
           var second = 9;
@@ -83,7 +78,7 @@
             btn.style.display = 'none';
             document.getElementById('stats').style.display = 'block';
             socket.emit('user',{user:'<%=user%>'},function(data){
-
+              questionWindow.style.display = 'block';
               if(data)
               {
                 info.innerHTML='Game Starts';

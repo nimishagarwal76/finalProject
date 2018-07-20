@@ -111,7 +111,7 @@ function(username, password, done){
 const mongoose = require('mongoose');
 var db = mongoose.connection;
 
-    mongoose.connect('mongodb://localhost/calendar');
+    mongoose.connect('mongodb://localhost/quiz');
     db.once('open', function(){
         console.log('Connection has been made, now make fireworks...');
     }).on('error', function(error){
@@ -141,7 +141,7 @@ function questionController(socket, mode)
     .then((data)=>{
       socket.answer = data.results[0].correct_answer;
       var options = data.results[0].incorrect_answers;
-      options.push(data.results[0].correct_answer)
+      options.splice(Math.floor(Math.random()*3),0,data.results[0].correct_answer);
       var ques = {
         question : data.results[0].question,
         option : options
@@ -175,7 +175,8 @@ function questionController(socket, mode)
       }
 
       var options = data.results[0].incorrect_answers;
-      options.push(data.results[0].correct_answer)
+      options.splice(Math.floor(Math.random()*3),0,data.results[0].correct_answer);
+      // options.push(data.results[0].correct_answer)
       var ques = {
         question : data.results[0].question,
         option : options,
@@ -401,10 +402,6 @@ nspDual.on('connection', (socket) => {
           io.nsps['/'].connected[id].emit('gameover',{result : 'win'});
         }
 
-
-
-
-
       // }
 
     });
@@ -424,6 +421,31 @@ nspDual.on('connection', (socket) => {
     });
 
     socket.on('personalMessage',function(data){
+      if(!socket.chatID)
+      {User.findOne({username:socket.user}, {chat:1}, function(err, result){
+        console.log('checking', result);
+        result.chat.push({
+          emiter : socket.user,
+          message : data.message
+        });
+        result.save();
+        for (socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
+          io.nsps['/'].connected[socketID].chatID = result._id;
+        }
+      });}
+      else
+      {User.findOne({username:socket.user,_id:socket.chatID}, {chat:1}, function(err, result){
+        console.log('checking when socket id is defined', result);
+        result.chat.push({
+          emiter : socket.user,
+          message : data.message
+        });
+        result.save();
+        for (socketID in io.nsps['/'].adapter.rooms[socket.room].sockets) {
+          io.nsps['/'].connected[socketID].chatID = result._id;
+        }
+      });}
+
       io.sockets.in(socket.room).emit('pMessageServer',{message:data.message,emiter:socket.user});
     });
 
@@ -437,7 +459,6 @@ nspDual.on('connection', (socket) => {
       socket.leave(socket.room);
       console.log('disconnected',socket.user);
       delete avail[socket.user];
-
     });
 
 });

@@ -85,9 +85,12 @@
           output.addEventListener('contextmenu', e => e.preventDefault());
 
           send.addEventListener('click', (e) => {
-            console.log(chatInput.value);
-            socket.emit('personalMessage', {message : chatInput.value})
-            chatInput.value = '';
+            if(chatInput.value != '')
+            {
+              console.log(chatInput.value);
+              socket.emit('personalMessage', {message : chatInput.value})
+              chatInput.value = '';
+            }
           });
 
 
