@@ -1,4 +1,4 @@
-# deltaCalendar
+# realTimeQuiz
 this is a calendarapp built for delta inductions
 
 RUN -
