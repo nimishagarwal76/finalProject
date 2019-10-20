@@ -2,7 +2,9 @@
 This is a real time quizing application
 
 RUN -
+
 `npm install`
+
 `npm start`
 
 TECHNOLOGY - 
