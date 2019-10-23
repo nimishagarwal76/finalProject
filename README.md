@@ -5,6 +5,7 @@ RUN -
 * npm install
 * npm start
 
+
 TECHNOLOGY - 
 * NodeJS
 * MongoDB
